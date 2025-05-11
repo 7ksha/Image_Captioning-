@@ -187,23 +187,15 @@ model = Model(inputs=[input_image, input_caption], outputs=output)
 ## 🖼️ Screenshots of Sample Outputs
 
 Example format:
-```
 ![output](https://github.com/user-attachments/assets/1c1dd298-bf4e-4855-976c-d257399cab40)
-
-```
 
 ---
 
 ## 📈 Training Loss Plot
 
 Include a plot showing training vs validation loss:
-
-```
 ![loss](https://github.com/user-attachments/assets/15a3754c-da97-4820-b00f-5cab3a0282c9)
 
-
-
-```
 
 ---
 
