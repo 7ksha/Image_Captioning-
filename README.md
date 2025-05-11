@@ -188,7 +188,8 @@ model = Model(inputs=[input_image, input_caption], outputs=output)
 
 Example format:
 ```
-![image](https://github.com/user-attachments/assets/2a8c7a4e-ae41-471e-a517-981e18ca446e)
+![output](https://github.com/user-attachments/assets/ebd6f367-0903-48ff-b595-c99452be5fd4)
+
 
 ```
 
@@ -199,7 +200,8 @@ Example format:
 Include a plot showing training vs validation loss:
 
 ```
-![image](https://github.com/user-attachments/assets/d2cfe9d3-efca-4b14-be2c-1c4598607843)
+![loss](https://github.com/user-attachments/assets/cad020a6-a813-4ea9-bbb2-d533f8f600bf)
+
 
 ```
 
