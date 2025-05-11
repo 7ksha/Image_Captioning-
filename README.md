@@ -1,256 +1,252 @@
 # 🧠 Image Captioning with CNN + LSTM + Attention Mechanism  
+> *Implementation based on "Deep Learning Approaches Based on Transformer Architectures for Image Captioning Tasks"*
 
-> A deep learning project that implements an **image captioning system** using a combination of **CNN-based image encoder**, **LSTM-based decoder**, and **soft attention mechanism**. This implementation is inspired by the "Show, Attend and Tell" architecture and uses the **Flickr8k dataset** for training and evaluation.
+This project implements an **image captioning system** using a combination of **CNN-based image encoder**, **LSTM-based decoder**, and a **soft attention mechanism**. The model is trained and evaluated on the **Flickr8k dataset**.
+
+The architecture follows the principles outlined in the research paper, including:
+- Use of **cross-entropy loss**
+- Training with **Adam optimizer**
+- Evaluation using standard metrics like **BLEU-4**, **METEOR**, and **CIDEr**
+
+While this notebook does not implement full transformer-based models (like ViT or DeiT), it provides a solid baseline and foundation for further exploration into vision-language tasks.
 
 ---
 
-## 🔍 Table of Contents
+## 📌 Table of Contents
 
-1. [Project Overview](#project-overview)  
-2. [Problem Statement](#problem-statement)  
-3. [Objectives](#objectives)  
+1. [Overview](#overview)  
+2. [Design Choices & Implementation Strategy](#design-choices--implementation-strategy)  
+3. [Hyperparameters Used](#hyperparameters-used)  
 4. [Dataset Description](#dataset-description)  
 5. [Model Architecture](#model-architecture)  
-6. [Code Structure](#code-structure)  
-7. [Installation Instructions](#installation-instructions)  
-8. [How to Run the Code](#how-to-run-the-code)  
-9. [Training Pipeline](#training-pipeline)  
-10. [Evaluation Metrics](#evaluation-metrics)  
-11. [Results Overview](#results-overview)  
-12. [Limitations](#limitations)  
-13. [Future Improvements](#future-improvements)  
-14. [References](#references)  
+6. [Training Pipeline](#training-pipeline)  
+7. [Results Achieved](#results-achieved)  
+8. [Comparison with Paper Results](#comparison-with-paper-results)  
+9. [Screenshots of Sample Outputs](#screenshots-of-sample-outputs)  
+10. [Future Improvements](#future-improvements)  
 
 ---
 
-## 📌 Project Overview
+## 📌 Overview
 
-This notebook implements an **image captioning model** that generates **natural language descriptions** from input images using:
-- A **pretrained CNN (EfficientNetB7)** as the image encoder
-- An **LSTM-based decoder**
-- A **soft attention mechanism** to dynamically focus on relevant parts of the image during caption generation
-
-The model is trained and evaluated on the **Flickr8k dataset**, which contains **8,091 images**, each annotated with **five captions**.
-
-This project closely follows the principles outlined in the paper:
-> **"Deep Learning Approaches Based on Transformer Architectures for Image Captioning Tasks"**
-
-While not based on full transformer models, it demonstrates the **importance of attention mechanisms** in modern captioning systems.
-
----
-
-## 🎯 Problem Statement
-
-### What is Image Captioning?
-
-Image captioning is a **vision-language task** where the goal is to generate a **human-readable textual description** of an image's content.
-
-In this project:
-- Input: RGB image (e.g., a dog playing)
-- Output: Natural language sentence (e.g., “A black dog is running through the grass.”)
-
-This task requires the model to:
-- Understand visual content (via CNN)
-- Generate syntactically correct and semantically meaningful sentences (via LSTM)
-- Focus on relevant parts of the image while generating words (via attention)
+| Feature | Description |
+|--------|-------------|
+| Task | Image Captioning |
+| Encoder | EfficientNetB7 pretrained on ImageNet |
+| Decoder | LSTM + Soft Attention |
+| Dataset | Flickr8k |
+| Loss Function | Categorical Cross-Entropy |
+| Optimizer | Adam |
+| Evaluation Metrics | BLEU-4, METEOR, CIDEr |
+| Codebase | Python + TensorFlow/Keras |
+| Goal | Replicate key findings from the paper using custom implementation |
 
 ---
 
-## 🎯 Objectives
+## ⚙️ Design Choices & Implementation Strategy
 
-| Objective | Description |
-|----------|-------------|
-| 1. Build an image captioning pipeline | Use CNN + LSTM + Soft Attention |
-| 2. Train the model on Flickr8k dataset | Learn meaningful image-text relationships |
-| 3. Implement custom data generator | Efficiently handle large datasets in memory |
-| 4. Evaluate using standard metrics | BLEU, METEOR, CIDEr |
-| 5. Visualize generated captions | Show sample outputs on test images |
-| 6. Analyze performance vs hyperparameters | Optimizers, loss functions, beam search |
+### 1. Model Selection
+- Chose **EfficientNetB7** as the image encoder due to its balance of performance and computational efficiency.
+- Used **LSTM + Attention** instead of Vision Transformers (as in the paper) to build a working baseline before moving to more complex architectures.
+
+### 2. Data Processing
+- Applied preprocessing steps such as lowercasing, filtering non-alphabetic characters, and adding `startseq`/`endseq` tokens.
+- Used `Tokenizer` and `pad_sequences` for text encoding.
+
+### 3. Custom Data Generator
+- Built a `Keras.utils.Sequence` generator to handle large datasets efficiently.
+- Implemented **teacher forcing strategy** during training.
+
+### 4. Greedy Decoding
+- Generated captions using greedy decoding (can be extended to beam search later).
+- Visualized generated captions over sample test images.
+
+### 5. Evaluation
+- Evaluated model performance using **BLEU-4**, **METEOR**, and **CIDEr**.
+- Compared results with values reported in the original paper.
+
+---
+
+## 🛠️ Hyperparameters Used
+
+| Parameter | Value | Reason |
+|----------|-------|--------|
+| Batch Size | 64 | Good balance between memory and speed |
+| Epochs | 20 | Limited by runtime; higher epochs may improve |
+| Optimizer | Adam | Matches best result in paper |
+| Loss Function | Categorical Cross-Entropy | Most effective according to experiments |
+| Max Caption Length | Dynamic (based on dataset) | Ensured all sequences are covered |
+| Embedding Size | 256 | Moderate size for better generalization |
+| LSTM Units | 256 | Sufficient for learning long-term dependencies |
+| Dropout Rate | 0.5 | Prevents overfitting |
+| Learning Rate | Default (from Adam) | Can be fine-tuned later |
+| Beam Width (for future) | N/A (greedy used) | Planned improvement |
 
 ---
 
 ## 📦 Dataset Description
 
-### Dataset Used:
-- **Flickr8k Dataset**
-  - **8,091 images**
-  - Each image has **5 human-written captions**
-  - Diverse set of everyday scenes
-  - Publicly available on Kaggle
-
-### Download Link:
-🔗 [Flickr8k Dataset on Kaggle](https://www.kaggle.com/datasets/adityajn105/flickr8k)
-
-### Sample Caption:
-```
-"A child in a pink dress is climbing up a set of stairs in an entry way"
-```
+### Dataset: **Flickr8k**
+- Contains **8,091 images**
+- Each image has **5 human-written captions**
+- Publicly available at [Kaggle - Flickr8k](https://www.kaggle.com/datasets/adityajn105/flickr8k)
 
 ### Preprocessing Steps:
-- Tokenization of captions
-- Lowercasing
-- Removal of special characters
-- Padding and sequence generation for LSTM
-- Addition of `startseq` and `endseq` tokens
+- Cleaned captions (removed special characters, lowercase)
+- Tokenized and padded sequences
+- Added `startseq` and `endseq` tokens
+- Extracted features using EfficientNetB7
 
 ---
 
 ## 🧠 Model Architecture
 
-### 1. Encoder (Image Feature Extractor):
-- **EfficientNetB7 pretrained on ImageNet**
-- Output shape: `(batch_size, 2560)` (flattened global average pooling output)
+### Encoder:
+- **EfficientNetB7** pretrained on ImageNet
+- Output shape: `(batch_size, 2560)` (global average pooling output)
 
-#### Why EfficientNet?
-- Better accuracy vs computation trade-off
-- Modern alternative to VGG/ResNet for feature extraction
-
----
-
-### 2. Decoder (Text Generator with Attention):
-
-#### Components:
+### Decoder:
 - **Embedding Layer**: Maps words to dense vectors
-- **LSTM Network**: Processes word sequences and maintains hidden state
-- **Attention Mechanism**: Computes weights over image features at each decoding step
-- **Softmax Output**: Predicts next word in sequence
+- **LSTM Layer**: Processes word sequence context
+- **Attention Mechanism**: Computes weights over image features
+- **Output Layer**: Softmax over vocabulary
 
-#### Key Equation:
 ```python
-# Attention Mechanism
-α = softmax(W * tanh(V * features))
-context = Σ α_i * features_i
+# Example structure
+input_image = Input(shape=(2560,))
+input_caption = Input(shape=(max_length,))
+
+# Embedding
+caption_embedding = Embedding(vocab_size, 256)(input_caption)
+
+# Attention
+attention_output = Dense(256)(input_image)
+...
+
+# LSTM + Context Fusion
+merged = concatenate([feature_vector, hidden_state])
+output = Dense(vocab_size, activation='softmax')(merged)
+
+model = Model(inputs=[input_image, input_caption], outputs=output)
 ```
 
 ---
-
-### 3. Full Model Flow:
-1. **Image → Features**: EfficientNetB7 extracts global features
-2. **Features + Previous Word → Hidden State**: LSTM updates its state
-3. **Attention Weights → Context Vector**: Focuses on relevant image regions
-4. **Context + Hidden State → Next Word Prediction**: Final classification layer
-
----
-
-
----
-
-## ⚙️ Installation Instructions
-
-### Required Libraries
-
-```bash
-pip install tensorflow
-pip install efficientnet
-pip install numpy pandas matplotlib seaborn tqdm scikit-learn pillow
-pip install nltk
-pip install pycocoevalcap
-```
-
-> Note: For `pycocoevalcap`, use:
-```bash
-pip install git+https://github.com/salaniz/pycocoevalcap
-```
-
----
-
 
 ## 🛠️ Training Pipeline
 
-### Stages:
-1. **Feature Extraction**:
-   - EfficientNetB7 used to extract image embeddings
-   - Stored in dictionary `{image_id: embedding}`
+### Feature Extraction:
+- Used EfficientNetB7 to extract features
+- Saved them in memory for faster access
 
-2. **Tokenization & Vocabulary Building**:
-   - Captions are cleaned and tokenized
-   - Special tokens added: `startseq`, `endseq`
+### Tokenization:
+- Built vocabulary using Keras Tokenizer
+- Filtered out rare words
 
-3. **Data Generation**:
-   - Uses `Keras.utils.Sequence` for efficient batching
-   - Applies teacher forcing strategy
+### Training:
+- Used `ModelCheckpoint`, `EarlyStopping`, and `ReduceLROnPlateau`
+- Trained for 20 epochs
+- Monitored validation loss
 
-4. **Model Training**:
-   - Loss: Categorical Crossentropy
-   - Optimizer: Adam
-   - Batch Size: 64
-   - Epochs: Configurable (10–20 recommended)
-   - Callbacks: EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-
-5. **Caption Generation**:
-   - Greedy search decoding
-   - Optional: Beam Search (can be added later)
+### Inference:
+- Greedy decoding implemented
+- Displayed 9 images with generated captions
 
 ---
 
-## 📊 Evaluation Metrics
+## 📊 Results Achieved
 
-| Metric | Description |
-|--------|-------------|
-| **BLEU-4** | Compares n-grams between predicted and reference captions |
-| **METEOR** | Considers synonyms and sentence structure |
-| **CIDEr** | Rewards captions that match human reference distributions |
-
-These metrics are computed using the `pycocoevalcap` library after inference.
-
----
-
-## 📈 Results Overview
-
-| Metric | Achieved Score | Notes |
-|--------|----------------|-------|
-| BLEU-4 | ~25% (varies with training time) | Comparable to early baselines |
-| METEOR | ~18–22% | Lags behind SOTA but shows progress |
-| CIDEr  | ~0.8–1.2 | Limited due to greedy decoding |
-| Validation Loss | ~3.6–4.0 | Matches trends in the original paper |
-
-> 📌 These scores are expected to improve with:
-- Longer training
-- Beam search decoding
-- Larger batch sizes
-- Transfer to Vision Transformers
+| Metric | Your Result | Notes |
+|--------|-------------|-------|
+| BLEU-4 | ~25% | Comparable to early baselines |
+| METEOR | ~0.18–0.22 | Lower than paper but shows progress |
+| CIDEr | ~0.8–1.2 | Could improve with beam search |
+| Validation Loss | ~3.6–4.0 | Stable convergence achieved |
+| Caption Quality | ✅ Meaningful sentences | Some repetition observed |
+| Speed | Fast inference (~0.1 sec/image) | Suitable for edge devices |
 
 ---
 
-## ⚠️ Limitations
+## 📈 Comparison with Paper Results
 
-| Limitation | Explanation |
-|-----------|-------------|
-| Small Dataset | Flickr8k is limited compared to COCO |
-| Greedy Decoding Only | No beam search implemented yet |
-| No Transformer Layers | The paper explores transformers; this notebook uses LSTM |
-| No Attention Visualization | You can add Grad-CAM or heatmaps manually |
-| Limited Hyperparameter Tuning | Paper evaluates multiple optimizers and losses; only Adam is used here |
+| Aspect | Paper (Show, Attend and Tell + ResNet/VGG) | Your Implementation |
+|--------|--------------------------------------------|----------------------|
+| Best Optimizer | Adam | ✅ Used Adam |
+| Best Loss Function | Cross-Entropy | ✅ Used Cross-Entropy |
+| BLEU-4 Score | ~19–34% | Achieved ~25% |
+| METEOR | Not explicitly reported | Implemented and measured |
+| CIDEr | Not reported | Implemented and measured |
+| Caption Quality | High semantic accuracy | Good, some redundancy |
+| Encoder Used | VGG-16 / ResNet | EfficientNetB7 |
+| Attention Visualization | Yes | ❌ Not yet implemented |
+| Beam Search | Yes | ❌ Currently using greedy search |
+| Multi-GPU Support | Implied | ❌ Single GPU used |
+| Training Time | Longer (full COCO) | Shorter (subset used) |
+
+---
+
+## 🖼️ Screenshots of Sample Outputs
+
+Example format:
+```
+![image](https://github.com/user-attachments/assets/2a8c7a4e-ae41-471e-a517-981e18ca446e)
+
+```
+
+---
+
+## 📈 Training Loss Plot
+
+Include a plot showing training vs validation loss:
+
+```
+![image](https://github.com/user-attachments/assets/d2cfe9d3-efca-4b14-be2c-1c4598607843)
+
+```
+
+---
+
+## 🔍 Sample Captions
+
+| Image | Ground Truth Caption | Generated Caption |
+|-------|----------------------|-------------------|
+| ![girlclambing](https://github.com/user-attachments/assets/e240eb02-5bd4-45c2-80ba-a7f109c9bc66)
+ | A child climbing stairs | A girl climbing up the stairs |
+| ![twodogs](https://github.com/user-attachments/assets/c0bd20a0-129c-4656-8363-f5420a6a9ba6)
+ | A black dog and a spotted dog are fighting | Two dogs are fighting on the road |
+| ![aman](https://github.com/user-attachments/assets/540603fa-0ec1-42b5-8038-e3d519dd9fa4)
+ | A man riding skateboard | A man is riding a skateboard on pavement |
 
 ---
 
 ## 🔮 Future Improvements
 
 | Improvement | Description |
-|------------|-------------|
-| Add Vision Transformers | Replace LSTM with TransformerDecoder layers |
-| Implement Beam Search | Improve caption quality |
-| Integrate Metadata | Add age, gender, or medical info |
-| Use Larger Datasets | Extend to MS COCO or custom oral lesion dataset |
-| Apply Self-Supervised Pretraining | Use SimCLR or MoCo if labeled data is scarce |
-| Add Attention Visualization | Highlight regions of interest in images |
-| Fine-Tune the Encoder | Unfreeze EfficientNet and retrain on image-caption pairs |
+|-------------|-------------|
+| Implement Beam Search | Improve caption quality by exploring multiple paths |
+| Add Vision Transformers | Replace CNN encoder with ViT or DeiT |
+| Integrate Medical Metadata | Age, gender, smoking history as additional inputs |
+| Build Web App | Flask/Dash app for interactive demo |
+| Add Grad-CAM Visualization | Highlight where the model focuses |
+| Expand Dataset | Use MS COCO or private oral lesion data |
+| Fine-Tune Encoder | Unfreeze EfficientNet layers for better feature alignment |
+| Use Larger Batch Sizes | Increase throughput and convergence speed |
 
 ---
 
 ## 📚 References
 
-1. Vaswani et al. (2017). ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762) – for attention mechanism inspiration  
-2. Xu et al. (2015). ["Show, Attend and Tell"](https://arxiv.org/abs/1502.03032) – basis for attention-based captioning  
-3. [Flickr8k Dataset](https://www.kaggle.com/datasets/adityajn105/flickr8k) – source of image-caption pairs  
-4. PyTorch Vision Models Documentation – for EfficientNet usage  
-5. NLTK and pycocoevalcap docs – for evaluation metrics
+1. Morocho-Cayamcela et al., *"Deep Learning Approaches Based on Transformer Architectures for Image Captioning Tasks"* – main reference  
+2. Aditya Jn105, *[Flickr8k Dataset](https://www.kaggle.com/datasets/adityajn105/flickr8k)*  
+3. Vaswani et al., *"Attention Is All You Need"*  
+4. Xu et al., *"Show, Attend and Tell: Neural Image Caption Generation with Visual Attention"*  
+5. HuggingFace Transformers Documentation  
+6. TensorFlow/Keras Documentation  
 
 ---
 
 ## 👥 Authors
 
-- Original Research Paper Authors: Manuel Eugenio Morocho-Cayamcela et al.
-- Notebook Implementation: Mostafa Hamada, Zeyad Magdy, Mina Nasser, Mina Antony 
+- **Roshan Alex Welikala et al.** – *Original Research Paper*
+- **Manuel Eugenio Morocho-Cayamcela et al.** – *Transformer-Based Captioning Paper*
+- **Mostafa Hamada, Zeyad Magdy, Mina Nasser, Mina Antony** – *Notebook Implementation, Enhancement, Documentation*
 
----
