@@ -20,7 +20,6 @@
 12. [Limitations](#limitations)  
 13. [Future Improvements](#future-improvements)  
 14. [References](#references)  
-15. [License](#license)
 
 ---
 
@@ -133,30 +132,6 @@ context = Σ α_i * features_i
 
 ---
 
-## 📁 Code Structure
-
-```
-image-captioning-cnn-lstm-attention/
-│
-├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
-│
-├── data/
-│   ├── Images/                        # Folder containing all image files
-│   └── captions.txt                  # CSV-style file mapping image names to captions
-│
-├── src/
-│   ├── preprocessing.py               # Text cleaning, tokenization, padding
-│   ├── model.py                       # Encoder-decoder model definition
-│   ├── datagen.py                     # Custom Keras Sequence generator
-│   └── evaluate.py                    # BLEU, METEOR, CIDEr scoring
-│
-├── notebooks/
-│   └── image_captioning.ipynb         # Main Jupyter Notebook
-│
-└── utils/
-    └── config.py                      # Configuration parameters
-```
 
 ---
 
@@ -179,37 +154,6 @@ pip install git+https://github.com/salaniz/pycocoevalcap
 
 ---
 
-## ▶️ How to Run the Code
-
-### Local Machine or Colab:
-
-1. Clone the repo:
-```bash
-git clone https://github.com/yourusername/image-captioning-cnn-lstm-attention.git
-cd image-captioning-cnn-lstm-attention
-```
-
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Place your dataset in `/data/` folder:
-- `Images/`: All image files
-- `captions.txt`: CSV-like format (`image_name,caption`)
-
-4. Open the notebook:
-```bash
-jupyter notebook notebooks/image_captioning.ipynb
-```
-
-5. Run all cells to:
-   - Preprocess text/images
-   - Extract features
-   - Train the model
-   - Evaluate and visualize results
-
----
 
 ## 🛠️ Training Pipeline
 
@@ -304,33 +248,9 @@ These metrics are computed using the `pycocoevalcap` library after inference.
 
 ---
 
-## 📄 License
-
-MIT License – see [LICENSE](LICENSE) for details.
-
----
-
 ## 👥 Authors
 
 - Original Research Paper Authors: Manuel Eugenio Morocho-Cayamcela et al.
-- Notebook Implementation: Your Name / Team Name
-- Enhancement & Documentation: AI Assistant (You can credit yourself or your team)
+- Notebook Implementation: Mostafa Hamada, Zeyad Magdy, Mina Nasser, Mina Antony 
 
 ---
-
-## 💬 Contact
-
-For questions or contributions, feel free to reach out via email or open an issue on GitHub.
-
----
-
-## ❤️ Acknowledgements
-
-- Kaggle community for hosting the dataset
-- TensorFlow/Keras teams for deep learning tools
-- NLTK and pycocoevalcap contributors for evaluation tools
-- Original research authors for foundational knowledge
-
----
-
-Let me know if you'd like me to generate this as a downloadable `.md` file or help you write a **report section** or **presentation slides** based on this notebook.
