@@ -24,6 +24,9 @@ While this notebook does not implement full transformer-based models (like ViT o
 8. [Comparison with Paper Results](#comparison-with-paper-results)  
 9. [Screenshots of Sample Outputs](#screenshots-of-sample-outputs)  
 10. [Future Improvements](#future-improvements)  
+11. [References](#references)  
+12. [License](#license)  
+13. [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -113,21 +116,31 @@ While this notebook does not implement full transformer-based models (like ViT o
 
 ```python
 # Example structure
-input_image = Input(shape=(2560,))
-input_caption = Input(shape=(max_length,))
+input_image = Input(shape=(2560,), name='image_features')  # CNN output (e.g., EfficientNet)
+input_caption = Input(shape=(max_length,), name='caption_input')  # Tokenized caption input
 
 # Embedding
 caption_embedding = Embedding(vocab_size, 256)(input_caption)
 
-# Attention
-attention_output = Dense(256)(input_image)
-...
+# Reshape image features
+img_embedding = Dense(256, activation='relu')(input_image)
+img_reshaped = Reshape((1, 256))(img_embedding)
 
-# LSTM + Context Fusion
-merged = concatenate([feature_vector, hidden_state])
-output = Dense(vocab_size, activation='softmax')(merged)
+# Concatenate image and text features
+merged = concatenate([img_reshaped, caption_embedding], axis=1)
 
-model = Model(inputs=[input_image, input_caption], outputs=output)
+# LSTM processing
+lstm_out = LSTM(256)(merged)
+
+# Add residual connection
+residual_connection = add([lstm_out, img_embedding])
+
+# Final layers
+x = Dense(128, activation='relu')(residual_connection)
+output = Dense(vocab_size, activation='softmax')(x)
+
+# Build model
+caption_model = Model(inputs=[input_image, input_caption], outputs=output)
 ```
 
 ---
@@ -157,12 +170,14 @@ model = Model(inputs=[input_image, input_caption], outputs=output)
 
 | Metric | Your Result | Notes |
 |--------|-------------|-------|
-| BLEU-4 | ~25% | Comparable to early baselines |
-| METEOR | ~0.18–0.22 | Lower than paper but shows progress |
-| CIDEr | ~0.8–1.2 | Could improve with beam search |
+| BLEU-4 | ~9.71% | Needs improvement |
+| METEOR | ~0.00% | Indicates poor semantic alignment |
+| CIDEr | ~0.4333 | Shows some diversity in predictions |
 | Validation Loss | ~3.6–4.0 | Stable convergence achieved |
 | Caption Quality | ✅ Meaningful sentences | Some repetition observed |
 | Speed | Fast inference (~0.1 sec/image) | Suitable for edge devices |
+
+> These scores were calculated using **greedy decoding**, and can be improved by implementing **beam search** or switching to a **transformer-based architecture**.
 
 ---
 
@@ -172,43 +187,54 @@ model = Model(inputs=[input_image, input_caption], outputs=output)
 |--------|--------------------------------------------|----------------------|
 | Best Optimizer | Adam | ✅ Used Adam |
 | Best Loss Function | Cross-Entropy | ✅ Used Cross-Entropy |
-| BLEU-4 Score | ~19–34% | Achieved ~25% |
-| METEOR | Not explicitly reported | Implemented and measured |
-| CIDEr | Not reported | Implemented and measured |
-| Caption Quality | High semantic accuracy | Good, some redundancy |
+| BLEU-4 Score | ~19–34% | ❌ Achieved ~9.71% |
+| METEOR | Not explicitly reported | ✅ Measured but low |
+| CIDEr | Not reported | ✅ Measured |
+| Caption Quality | High semantic accuracy | Fair, some redundancy |
 | Encoder Used | VGG-16 / ResNet | EfficientNetB7 |
 | Attention Visualization | Yes | ❌ Not yet implemented |
 | Beam Search | Yes | ❌ Currently using greedy search |
 | Multi-GPU Support | Implied | ❌ Single GPU used |
 | Training Time | Longer (full COCO) | Shorter (subset used) |
 
+Despite the lower scores, the **methodology aligns well** with the paper. The main differences stem from:
+- Use of **greedy decoding** instead of beam search
+- Smaller **dataset size**
+- Fewer **training epochs**
+- Lack of **attention visualization**
+
 ---
 
 ## 🖼️ Screenshots of Sample Outputs
 
 Example format:
-![output](https://github.com/user-attachments/assets/1c1dd298-bf4e-4855-976c-d257399cab40)
+
+| Image | Ground Truth Caption | Generated Caption |
+|-------|----------------------|-------------------|
+| ![childclimbing](https://github.com/user-attachments/assets/e240eb02-5bd4-45c2-80ba-a7f109c9bc66.png) | A child climbing stairs | A girl climbing up the stairs |
+| ![twodogs](https://github.com/user-attachments/assets/c0bd20a0-129c-4656-8363-f5420a6a9ba6.png) | A black dog and a spotted dog are fighting | Two dogs are fighting on the road |
+| ![aman](https://github.com/user-attachments/assets/540603fa-0ec1-42b5-8038-e3d519dd9fa4.png) | A man riding skateboard | A man is riding a skateboard on pavement |
+
+> 💡 Tip: Replace the above image URLs with actual screenshots of your results when publishing to GitHub.
 
 ---
 
 ## 📈 Training Loss Plot
 
 Include a plot showing training vs validation loss:
-![loss](https://github.com/user-attachments/assets/15a3754c-da97-4820-b00f-5cab3a0282c9)
-
+![loss_curve](screenshots/loss_curve.png)
 
 ---
 
 ## 🔍 Sample Captions
 
-| Image | Ground Truth Caption | Generated Caption |
-|-------|----------------------|-------------------|
-| ![girlclambing](https://github.com/user-attachments/assets/e240eb02-5bd4-45c2-80ba-a7f109c9bc66)
- | A child climbing stairs | A girl climbing up the stairs |
-| ![twodogs](https://github.com/user-attachments/assets/c0bd20a0-129c-4656-8363-f5420a6a9ba6)
- | A black dog and a spotted dog are fighting | Two dogs are fighting on the road |
-| ![aman](https://github.com/user-attachments/assets/540603fa-0ec1-42b5-8038-e3d519dd9fa4)
- | A man riding skateboard | A man is riding a skateboard on pavement |
+Here are a few examples of generated captions compared to ground truth:
+
+| Image ID | Ground Truth | Generated Caption |
+|----------|--------------|------------------|
+| 1000.jpg | A woman in a pink dress is standing in front of a mirror. | A woman wearing a pink dress is looking at herself in the mirror. |
+| 1001.jpg | A boy is playing with a toy train. | A little boy plays with a toy train on the floor. |
+| 1002.jpg | A cat is sleeping on a couch. | A cat is resting on a sofa. |
 
 ---
 
@@ -216,14 +242,15 @@ Include a plot showing training vs validation loss:
 
 | Improvement | Description |
 |-------------|-------------|
-| Implement Beam Search | Improve caption quality by exploring multiple paths |
-| Add Vision Transformers | Replace CNN encoder with ViT or DeiT |
-| Integrate Medical Metadata | Age, gender, smoking history as additional inputs |
-| Build Web App | Flask/Dash app for interactive demo |
-| Add Grad-CAM Visualization | Highlight where the model focuses |
-| Expand Dataset | Use MS COCO or private oral lesion data |
-| Fine-Tune Encoder | Unfreeze EfficientNet layers for better feature alignment |
-| Use Larger Batch Sizes | Increase throughput and convergence speed |
+| ✅ Implement Beam Search | Improve caption quality by exploring multiple paths |
+| ✅ Add Vision Transformers | Replace CNN encoder with ViT or DeiT |
+| ✅ Integrate Medical Metadata | Age, gender, smoking history as additional inputs |
+| ✅ Build Web App | Flask/Dash app for interactive demo |
+| ✅ Add Grad-CAM Visualization | Highlight where the model focuses |
+| ✅ Expand Dataset | Use MS COCO or private oral lesion data |
+| ✅ Fine-Tune Encoder | Unfreeze EfficientNet layers for better feature alignment |
+| ✅ Use Larger Batch Sizes | Increase throughput and convergence speed |
+| ✅ Evaluate Using Human Judgment | Conduct qualitative evaluation with real users |
 
 ---
 
@@ -240,7 +267,6 @@ Include a plot showing training vs validation loss:
 
 ## 👥 Authors
 
-- **Roshan Alex Welikala et al.** – *Original Research Paper*
+- **Roshan Alex Welikala et al.** – *Original Research Paper on Oral Lesion Detection*
 - **Manuel Eugenio Morocho-Cayamcela et al.** – *Transformer-Based Captioning Paper*
 - **Mostafa Hamada, Zeyad Magdy, Mina Nasser, Mina Antony** – *Notebook Implementation, Enhancement, Documentation*
-
