@@ -25,12 +25,11 @@ While this notebook does not implement full transformer-based models (like ViT o
 9. [Screenshots of Sample Outputs](#screenshots-of-sample-outputs)  
 10. [Future Improvements](#future-improvements)  
 11. [References](#references)  
-12. [License](#license)  
-13. [Acknowledgements](#acknowledgements)
+
 
 ---
 
-## 📌 Overview
+## 📌 Overview <a name="overview"></a>
 
 | Feature | Description |
 |--------|-------------|
@@ -46,7 +45,7 @@ While this notebook does not implement full transformer-based models (like ViT o
 
 ---
 
-## ⚙️ Design Choices & Implementation Strategy
+## ⚙️ Design Choices & Implementation Strategy <a name="design-choices--implementation-strategy"></a>
 
 ### 1. Model Selection
 - Chose **EfficientNetB7** as the image encoder due to its balance of performance and computational efficiency.
