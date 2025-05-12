@@ -228,12 +228,9 @@ Here are a few examples of generated captions compared to ground truth:
 
 | Image | Ground Truth Caption | Generated Caption |
 |-------|----------------------|-------------------|
-| ![boy](https://github.com/user-attachments/assets/5cfe0f9f-821a-4ae0-99e7-ce2bbfdcf5ae)
- | A child climbing stairs | A girl climbing up the stairs |
-| ![twodogs](https://github.com/user-attachments/assets/456909b1-a3bb-478f-9ae4-1847965d453d)
- | A black dog and a spotted dog are fighting | Two dogs are fighting on the road |
-| ![aman](https://github.com/user-attachments/assets/f96fd9f2-4cc9-4251-a5cf-69a312ee617a)
- | A man riding skateboard | A man is riding a skateboard on pavement |
+| ![boy](https://github.com/user-attachments/assets/5cfe0f9f-821a-4ae0-99e7-ce2bbfdcf5ae) | A child climbing stairs | A girl climbing up the stairs |
+| ![twodogs](https://github.com/user-attachments/assets/456909b1-a3bb-478f-9ae4-1847965d453d) | A black dog and a spotted dog are fighting | Two dogs are fighting on the road |
+| ![aman](https://github.com/user-attachments/assets/f96fd9f2-4cc9-4251-a5cf-69a312ee617a) | A man riding skateboard | A man is riding a skateboard on pavement |
 
 ---
 
