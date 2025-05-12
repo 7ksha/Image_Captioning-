@@ -22,9 +22,10 @@ While this notebook does not implement full transformer-based models (like ViT o
 6. [Training Pipeline](#training-pipeline)  
 7. [Results Achieved](#results-achieved)  
 8. [Comparison with Paper Results](#comparison-with-paper-results)  
-9. [Screenshots of Sample Outputs](#screenshots-of-sample-outputs)  
-10. [Future Improvements](#future-improvements)  
-11. [References](#references)  
+9. [Screenshots of Sample Outputs](#screenshots-of-sample-outputs)
+10. [Training Loss Plot](#training-loss-plot)
+11. [Future Improvements](#future-improvements)  
+12. [References](#references)  
 
 
 ---
@@ -69,7 +70,7 @@ While this notebook does not implement full transformer-based models (like ViT o
 
 ---
 
-## 🛠️ Hyperparameters Used
+## 🛠️ Hyperparameters Used <a name="hyperparameters-used"></a>
 
 | Parameter | Value | Reason |
 |----------|-------|--------|
@@ -86,7 +87,7 @@ While this notebook does not implement full transformer-based models (like ViT o
 
 ---
 
-## 📦 Dataset Description
+## 📦 Dataset Description <a name="dataset-description"></a>
 
 ### Dataset: **Flickr8k**
 - Contains **8,091 images**
@@ -101,7 +102,7 @@ While this notebook does not implement full transformer-based models (like ViT o
 
 ---
 
-## 🧠 Model Architecture
+## 🧠 Model Architecture <a name="model-architecture"></a>
 
 ### Encoder:
 - **EfficientNetB7** pretrained on ImageNet
@@ -144,7 +145,7 @@ caption_model = Model(inputs=[input_image, input_caption], outputs=output)
 
 ---
 
-## 🛠️ Training Pipeline
+## 🛠️ Training Pipeline <a name="training-pipeline"></a>
 
 ### Feature Extraction:
 - Used EfficientNetB7 to extract features
@@ -165,7 +166,7 @@ caption_model = Model(inputs=[input_image, input_caption], outputs=output)
 
 ---
 
-## 📊 Results Achieved
+## 📊 Results Achieved <a name="results-achieved"></a>
 
 | Metric | Your Result | Notes |
 |--------|-------------|-------|
@@ -180,7 +181,7 @@ caption_model = Model(inputs=[input_image, input_caption], outputs=output)
 
 ---
 
-## 📈 Comparison with Paper Results
+## 📈 Comparison with Paper Results <a name="comparison-with-paper-results"></a>
 
 | Aspect | Paper (Show, Attend and Tell + ResNet/VGG) | Your Implementation |
 |--------|--------------------------------------------|----------------------|
@@ -204,24 +205,20 @@ Despite the lower scores, the **methodology aligns well** with the paper. The ma
 
 ---
 
-## 🖼️ Screenshots of Sample Outputs
+## 🖼️ Screenshots of Sample Outputs <a name="screenshots-of-sample-outputs"></a>
 
 Example format:
+![output](https://github.com/user-attachments/assets/0f429643-00e8-4bf7-887d-2d1b7ba195c7)
 
-| Image | Ground Truth Caption | Generated Caption |
-|-------|----------------------|-------------------|
-| ![childclimbing](https://github.com/user-attachments/assets/e240eb02-5bd4-45c2-80ba-a7f109c9bc66.png) | A child climbing stairs | A girl climbing up the stairs |
-| ![twodogs](https://github.com/user-attachments/assets/c0bd20a0-129c-4656-8363-f5420a6a9ba6.png) | A black dog and a spotted dog are fighting | Two dogs are fighting on the road |
-| ![aman](https://github.com/user-attachments/assets/540603fa-0ec1-42b5-8038-e3d519dd9fa4.png) | A man riding skateboard | A man is riding a skateboard on pavement |
 
-> 💡 Tip: Replace the above image URLs with actual screenshots of your results when publishing to GitHub.
 
 ---
 
-## 📈 Training Loss Plot
+## 📈 Training Loss Plot <a name="training-loss-plot"></a>
 
 Include a plot showing training vs validation loss:
-![loss_curve](screenshots/loss_curve.png)
+![loss](https://github.com/user-attachments/assets/b7f8d53a-7ca3-40b4-8260-e5a47e69e9bf)
+
 
 ---
 
@@ -229,15 +226,18 @@ Include a plot showing training vs validation loss:
 
 Here are a few examples of generated captions compared to ground truth:
 
-| Image ID | Ground Truth | Generated Caption |
-|----------|--------------|------------------|
-| 1000.jpg | A woman in a pink dress is standing in front of a mirror. | A woman wearing a pink dress is looking at herself in the mirror. |
-| 1001.jpg | A boy is playing with a toy train. | A little boy plays with a toy train on the floor. |
-| 1002.jpg | A cat is sleeping on a couch. | A cat is resting on a sofa. |
+| Image | Ground Truth Caption | Generated Caption |
+|-------|----------------------|-------------------|
+| ![boy](https://github.com/user-attachments/assets/5cfe0f9f-821a-4ae0-99e7-ce2bbfdcf5ae)
+ | A child climbing stairs | A girl climbing up the stairs |
+| ![twodogs](https://github.com/user-attachments/assets/456909b1-a3bb-478f-9ae4-1847965d453d)
+ | A black dog and a spotted dog are fighting | Two dogs are fighting on the road |
+| ![aman](https://github.com/user-attachments/assets/f96fd9f2-4cc9-4251-a5cf-69a312ee617a)
+ | A man riding skateboard | A man is riding a skateboard on pavement |
 
 ---
 
-## 🔮 Future Improvements
+## 🔮 Future Improvements <a name="future-improvements"></a>
 
 | Improvement | Description |
 |-------------|-------------|
@@ -253,7 +253,7 @@ Here are a few examples of generated captions compared to ground truth:
 
 ---
 
-## 📚 References
+## 📚 References <a name="references"></a>
 
 1. Morocho-Cayamcela et al., *"Deep Learning Approaches Based on Transformer Architectures for Image Captioning Tasks"* – main reference  
 2. Aditya Jn105, *[Flickr8k Dataset](https://www.kaggle.com/datasets/adityajn105/flickr8k)*  
